@@ -224,7 +224,11 @@ app.post('/submitFilm', function (req, res) {
         nom : req.body.nom,
         date : req.body.date,
         realisateur : req.body.realisateur,
-        genre: req.body.genre
+        genre: req.body.genre,
+        date_sortie:req.body.date_sortie,
+        
+        //pour la date de creation par l'utilisateur
+        date_creation : Date.now()
     })
     Data.save().then((data) =>{
         console.log("Data saved");
@@ -257,7 +261,8 @@ app.put('/film/edit/:id', function(req, res) {
         nom: req.body.nom,
         date : req.body.date,
         realisateur : req.body.realisateur,
-        genre: req.body.genre
+        genre: req.body.genre,
+        date_sortie: req.body.date_sortie
     }
     Film.updateOne({_id: req.params.id}, {$set: Data})
     .then(data =>{
