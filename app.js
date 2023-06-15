@@ -12,9 +12,81 @@ app.set('view engine', 'ejs');
 
 require('dotenv').config();
 
+//Authentification
+
+//cors:permet de recuperer des donnees qui vient des sites exterieures;il autorise l'acces et le pouvoir de recuperer le TOken et de permettre a se connecter 
+
 const cors = require('cors');
 
-app.use(cors());
+var corsOptions={
+    credentials:true,//l'acces au session et au cookies
+    origin:'http://localhost:3000',//donner l'acces au 3000
+    //statut d'erreur 
+    //200:tout iras bien//socket-io
+    //404:
+    //500:ERREUR SERVEUR
+    optionsSuccessStatus:200
+}
+app.options('*',cors(corsOptions));
+
+app.use(cors(corsOptions));
+
+
+//-------------------------------Pour le ChatAPP-------------------------------
+
+//appeler HTTP
+//appeler socketIO
+//appeler serveur
+const http = require('http');
+const socketIO=require('socket.io');
+const server = http.createServer(app);
+
+
+
+//donne l'acces au frontend
+const io = socketIO(server,{
+    cors:{
+        origin:'http://localhost:3000',
+        methods:['GET','POST'],
+        allowHeaders:['content-Type'],
+        credentials:true
+    }
+})
+
+
+
+//connexion 
+io.on('connection',(socket)=>{
+    console.log('Nouveau client connecter');
+
+
+//un nouveau message 
+     socket.on('message',(data)=>{
+        console.log("Received message",data);
+// emit:pour pouvoir envoyer un message au client 
+        io.emit('message',data);
+
+     });
+ //deconnection 
+     socket.on('disconnect',()=>{
+        console.log('disconnected');
+     })
+})
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
 
 
 //Mongodb :
@@ -54,7 +126,14 @@ app.use(methodOverride('_method'));
 //     res.send("<html><body><h1>Salut le monde </h1></body></html>");
 // });
 
+
+
+//pour ashees les mot de passe
 const bcrypt = require('bcrypt');
+
+
+
+
 
 //MULTER
 const multer = require('multer');
@@ -391,6 +470,6 @@ app.post('/api/login', function(req, res) {
 });
 
 
-var server = app.listen(5000, function () {
+ server.listen(5000, function () {
     console.log("Server listening on port 5000");
 });
